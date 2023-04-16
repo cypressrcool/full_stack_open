@@ -14,10 +14,11 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(8).fill(0))
-  
+
   const handleVote = () => {
     const copyVotes = [...votes]
-    copyVotes[selected] += 1 
+    copyVotes[selected] += 1
+    
     setVotes(copyVotes)
   }
 
@@ -26,12 +27,29 @@ const App = () => {
   }
 
 
+  const findMaxVotesIndex = () => {
+    let maxIndex = 0
+    let maxValue = votes[0]
+    votes.forEach((value, i)=>{
+      if (maxValue < value){
+        maxValue = value
+        maxIndex = i
+      }
+    })
+    return maxIndex
+  }
+
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <p>has {votes[selected]} votes</p>
       <button onClick={handleVote}>vote</button>
       <button onClick={handleNext}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[findMaxVotesIndex()]}
+      <p>has {votes[findMaxVotesIndex()]} votes</p>
     </div>
   )  
 }
