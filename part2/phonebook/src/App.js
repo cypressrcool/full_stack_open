@@ -27,18 +27,22 @@ const AddPerson = ({handleSubmitForm, newName, handleNameChange, newNumber, hand
   )
 }
 
-const Person = ({person}) => {
+const Person = ({person, deletePersonHandler}) => {
   return (
-<div>{person.name} {person.number}</div>
+    <div>
+      {person.name} 
+      {person.number} 
+      <button onClick={() => deletePersonHandler(person.id)}>delete</button>
+    </div>
   )
 }
 
-const Show = ({persons, filterValue}) => {
+const Show = ({persons, filterValue, deletePersonHandler}) => {
   return (
     <div>
       {persons
         .filter(person => person.name.toLowerCase().includes(filterValue.toLowerCase()))
-        .map(person=> <Person key={person.id} person = {person} />)}
+        .map(person=> <Person key={person.id} person = {person} deletePersonHandler={deletePersonHandler}/>)}
     </div>
   )
 }
@@ -80,6 +84,18 @@ const App = () => {
     setNewNumber('')
   }
 
+  const deletePersonHandler = (id) => {
+    const person = persons.find(p => p.id === id)
+    const confirmed = window.confirm(`Delete ${person.name} ?`)
+    if (confirmed){
+      personServices
+      .deletePerson(id)
+      .then(() => {
+        setPersons(persons.filter(p => p.id !== id))
+      })
+    }
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -111,6 +127,7 @@ const App = () => {
       <Show 
         persons = {persons} 
         filterValue={filterValue}
+        deletePersonHandler={deletePersonHandler}
       />     
     </div>
   )
