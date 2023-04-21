@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
 import personServices from './services/persons'
 
-const Notification = ({message}) => {
+const Notification = ({message, type}) => {
   if (message === ''){
     return null
+  }
+
+  if(type === 'error'){
+    return (
+      <div className="error">
+        {message}
+      </div>
+    )
   }
 
   return (
@@ -65,7 +73,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setNewFilterValue] = useState('')
   const [message, setMessage] = useState('')
-
+  const [type, setType] = useState('notify')
   useEffect(()=>{
     personServices
     .getAll()
@@ -91,8 +99,15 @@ const App = () => {
           .update(found.id, updatedPersonObject)
           .then(updatedPerson => {
             setPersons(persons.map(p => p.id !== found.id ? p : updatedPerson))
+            setMessage(`Updated ${found.name}`)
+            setType('notify')
           })
-          setMessage(`Updated ${found.name}`)
+          .catch(error => {
+            console.log(error);
+            setMessage(`Information of ${found.name} has already been removed from server`)
+            setType('error')
+          })
+          
 
           setTimeout(()=> {
             setMessage('')
@@ -112,7 +127,7 @@ const App = () => {
         setPersons(persons.concat(newPerson))
       })
       setMessage(`Added ${newName}`)
-
+      setType('notify')
       setTimeout(()=> {
         setMessage('')
       }, 5000)
@@ -149,7 +164,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message} type={type}/>
       <Filter 
         filterValue={filterValue} 
         handleFilterChange={handleFilterChange}
