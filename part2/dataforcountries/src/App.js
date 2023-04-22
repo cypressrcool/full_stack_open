@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import axios from 'axios'
 const SingleCountry = ({country}) => {
+
   return (
-    <div>
+    <div className="singleCountrybox">
       <h1>{country.name.common}</h1>
       <div className="information">
         <div>capital {country.capital}</div>
@@ -16,6 +17,24 @@ const SingleCountry = ({country}) => {
     </div>
   )
 }
+
+const Country = ({c}) => {
+  const [show, setShow] = useState(false)
+  const handleShowClick = () => {
+    setShow(!show)
+  }
+
+  return (
+    <div>
+      {c.name.common}
+      <button onClick={handleShowClick}>{show ? "hide": "show"}</button>
+      {show ? <SingleCountry country={c}/> : null}
+    </div>
+  )
+}
+
+
+
 const Countries = ({filteredCountries}) => {
   if (!filteredCountries){
     return null
@@ -28,7 +47,7 @@ const Countries = ({filteredCountries}) => {
   } else if (totalCountriesFound > 1 && totalCountriesFound <= 10){
     return (
       <div>
-        {filteredCountries.map(c => <div key={c.capital}>{c.name.common}</div>)}
+        {filteredCountries.map(c => <div key={c.name.official}><Country c={c}/></div>)}
       </div>
     )
   } else if (totalCountriesFound === 1){
@@ -50,10 +69,11 @@ const App = () => {
       .then(response => {
         const allCountries = response.data
         const filteredCountries = allCountries.filter(c => c.name.common.toLowerCase().includes(value))
-        // const totalCountriesFound = filteredCountries.length
         setFilteredCountries(filteredCountries)        
       })
-    } 
+    } else {
+      setFilteredCountries(null)
+    }
   }, [value])
 
   const handleValue = (event) => {
