@@ -3,7 +3,12 @@ const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
-app.use(morgan('tiny'))
+
+morgan.token('bodyPost', (req, res)=>{
+    return JSON.stringify(req.body)
+})
+
+app.use(morgan(':method :url :status - :response-time ms :bodyPost'))
 
 let persons = [
     { 
@@ -63,7 +68,6 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response)=>{
     const person = request.body
-
     if (!person.name || !person.number){
         return response.status(400).json({error:'name or number not present'})
     } 
