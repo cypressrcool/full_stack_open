@@ -62,8 +62,16 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response)=>{
     const person = request.body
 
-    const id = Math.floor(Math.random() * 10000)
-    person.id = id
+    if (!person.name || !person.number){
+        return response.status(400).json({error:'name or number not present'})
+    } 
+
+    const person_found = persons.find(p => p.name === person.name)
+    if (person_found){
+        return response.status(400).json({error:'name must be unique'})
+    }
+
+    person.id = Math.floor(Math.random() * 10000)
     persons = persons.concat(person)
 
     response.json(person)
